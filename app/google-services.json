@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "799485393671",
+    "firebase_url": "https://drawing-app-72e25.firebaseio.com",
+    "project_id": "drawing-app-72e25",
+    "storage_bucket": "drawing-app-72e25.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:799485393671:android:a27eba940b6ccfff1163a2",
+        "android_client_info": {
+          "package_name": "com.example.nehaapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "799485393671-067mr91364h93g9uau09qbbe69ouubme.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCE42htADxESkl2pqhRvq4m6zu2MMEZwZs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "799485393671-067mr91364h93g9uau09qbbe69ouubme.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
