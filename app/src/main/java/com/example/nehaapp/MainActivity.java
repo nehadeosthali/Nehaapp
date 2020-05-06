@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             canvasNeha.clear();
         }
         if (item.getItemId()==R.id.ic_save){
-            canvasNeha.saveFile(fileName);
+            canvasNeha.uploadFile(fileName);
         }
         if(item.getItemId()==R.id.brush_size){
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -126,8 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void saveFile() {
-    }
+
 
     @Override
     public void onClick(View v) {
