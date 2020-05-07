@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 public class CanvasNeha extends View {
@@ -60,6 +61,7 @@ public class CanvasNeha extends View {
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
 
+
     }
 
 
@@ -87,13 +89,13 @@ public class CanvasNeha extends View {
 
     }
     private void saveOfflineCanvas(){
-
+       bitmap.eraseColor(Color.WHITE);
         for (Path p : paths) {
             paint.setStrokeWidth(widthHashMap.get(p));
             paint.setColor(colorHashMap.get(p));
             mCanvas.drawPath(p, paint);
         }
-
+     invalidate();
     }
 
     public void clear(){
@@ -102,7 +104,7 @@ public class CanvasNeha extends View {
            deletedpaths.add(p);
         }
         paths.clear();
-        invalidate();
+        saveOfflineCanvas();
 
     }
 
@@ -148,17 +150,28 @@ public class CanvasNeha extends View {
     }
 
     public void undo() {
-        deletedpaths.add(paths.get(paths.size()-1));
-        paths.remove(paths.get(paths.size()-1));
-        invalidate();
+        if(paths.size() > 0) {
+            deletedpaths.add(paths.get(paths.size() - 1));
+            paths.remove(paths.get(paths.size() - 1));
 
+            saveOfflineCanvas();
+        }
     }
 
     public void redo() {
-        paths.add(deletedpaths.get(deletedpaths.size()-1));
-        deletedpaths.remove(deletedpaths.get(deletedpaths.size()-1));
-        invalidate();
+        if(deletedpaths.size()>0) {
+            paths.add(deletedpaths.get(deletedpaths.size() - 1));
+            deletedpaths.remove(deletedpaths.get(deletedpaths.size() - 1));
 
+            saveOfflineCanvas();
+        }
+
+    }
+
+    public void erase(){
+        brushColor = Color.WHITE;
+        brushwidth = 20;
+        saveOfflineCanvas();
     }
 
     @SuppressLint("WrongThread")
@@ -191,7 +204,7 @@ public class CanvasNeha extends View {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReference();
-        StorageReference imageRef = storageRef.child("images/test.png");
+        StorageReference imageRef = storageRef.child("images/"+ filename +".png");
 
         UploadTask uploadTask = imageRef.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -211,4 +224,7 @@ public class CanvasNeha extends View {
 
     }
 
+    private String getRandomID(){
+        return UUID.randomUUID().toString();
+    }
 }

@@ -101,6 +101,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (item.getItemId()==R.id.ic_save){
             canvasNeha.uploadFile(fileName);
         }
+        if (item.getItemId()==R.id.ic_erase){
+            canvasNeha.erase();
+        }
         if(item.getItemId()==R.id.brush_size){
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View layout = inflater.inflate(R.layout.brush_size,null);
