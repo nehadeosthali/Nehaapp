@@ -3,8 +3,11 @@ package com.example.nehaapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -17,8 +20,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -32,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button button6;
     private int color;
     private String fileName;
+    private StorageReference pathReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +73,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button6 = findViewById(R.id.button6);
         button6.setOnClickListener(this);
 
+
+
         fileName = UUID.randomUUID().toString() + getString(R.string.image_extension_jpg);
+        loadCanvaswithBackground();
 
 
 //        Button clearbutton = findViewById(R.id.clearButton);
@@ -69,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                canvasNeha.clear();
 //            }
 //        });
+
     }
 
     @Override
@@ -168,6 +187,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 canvasNeha.brushColor = color;
                 break;
         }
+
+    }
+
+    private void loadCanvaswithBackground(){
+        pathReference = FirebaseStorage.getInstance()
+                .getReferenceFromUrl("gs://drawing-app-72e25.appspot.com/elephant.png");
+        final File localFile = new File(getApplicationContext().getCacheDir().getAbsolutePath() +
+                "/" + "elephant.png");
+        pathReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                FileInputStream is = null;
+                try {
+                    is = new FileInputStream(localFile);
+
+                    Bitmap bmp = BitmapFactory.decodeStream(is);
+                    canvasNeha.setBitmap(bmp);
+                    is.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
 
     }
 }

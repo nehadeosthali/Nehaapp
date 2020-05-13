@@ -48,6 +48,9 @@ public class CanvasNeha extends View {
 
     HashMap<Path, Integer> colorHashMap = new HashMap<>();
     HashMap<Path, Float> widthHashMap = new HashMap<>();
+    private int mWidth;
+    private int mHeight;
+    private Bitmap template;
 
 
     public CanvasNeha(Context context, @Nullable AttributeSet attrs) {
@@ -71,7 +74,7 @@ public class CanvasNeha extends View {
 
         //canvas.drawCircle(500,500,300,paint);
         //canvas.drawColor(Color.RED);
-            canvas.drawBitmap(bitmap, 0, 0, null);
+        canvas.drawBitmap(bitmap, 0, 0, null);
 
         paint.setStrokeWidth(brushwidth);
         paint.setColor(brushColor);
@@ -83,6 +86,8 @@ public class CanvasNeha extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         Log.d(TAG, "onSizeChanged()");
+        mWidth = w;
+        mHeight = h;
         bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(bitmap);
         mCanvas.drawColor(Color.WHITE);
@@ -90,6 +95,7 @@ public class CanvasNeha extends View {
     }
     private void saveOfflineCanvas(){
        bitmap.eraseColor(Color.WHITE);
+       mCanvas.drawBitmap(template,0,0,null);
         for (Path p : paths) {
             paint.setStrokeWidth(widthHashMap.get(p));
             paint.setColor(colorHashMap.get(p));
@@ -226,5 +232,10 @@ public class CanvasNeha extends View {
 
     private String getRandomID(){
         return UUID.randomUUID().toString();
+    }
+
+    public void setBitmap(Bitmap bmp) {
+        template = Bitmap.createScaledBitmap(bmp,mWidth,mHeight,false);
+        saveOfflineCanvas();
     }
 }
