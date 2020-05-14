@@ -1,0 +1,8 @@
+<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/recyler_layout"
+    android:layout_width="409dp"
+    android:layout_height="729dp"
+    tools:layout_editor_absoluteX="1dp"
+    tools:layout_editor_absoluteY="1dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" />
