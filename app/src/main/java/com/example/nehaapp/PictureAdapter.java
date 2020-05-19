@@ -11,14 +11,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyViewHolder> {
-     ArrayList<String> mpictureList;
+     ArrayList<File> mpictureList;
     private Context context;
 
-    public PictureAdapter(ArrayList<String> pictureList) {
+    public PictureAdapter(ArrayList<File> pictureList) {
         mpictureList = pictureList;
     }
 
@@ -34,6 +35,7 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyViewHo
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Picasso.with(context).load(mpictureList.get(position))
+                .fit().centerCrop()
                 .into(holder.imageView);
 
     }

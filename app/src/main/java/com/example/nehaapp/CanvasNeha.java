@@ -55,6 +55,7 @@ public class CanvasNeha extends View {
 
     public CanvasNeha(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
         path = new Path();
         paint = new Paint();
         paint.setAntiAlias(true);

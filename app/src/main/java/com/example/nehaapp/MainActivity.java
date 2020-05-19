@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int color;
     private String fileName;
     private StorageReference pathReference;
+    private AlertDialog.Builder builder;
 
 
     @Override
@@ -142,6 +144,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             brushMedium.setOnClickListener((View.OnClickListener) this);
             brushLarge.setOnClickListener((View.OnClickListener) this);
 
+        }
+        if(item.getItemId()==R.id.ic_templates){
+            Intent intent  = new Intent(this,TemplateGalleryActivity.class);
+            startActivity(intent);
         }
 
         return true;
