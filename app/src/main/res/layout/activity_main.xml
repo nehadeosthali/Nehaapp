@@ -13,7 +13,8 @@
         android:id="@+id/canvasNeha"
         android:layout_width="wrap_content"
         android:layout_height="400dp"
-        android:weightSum="1" />
+        android:weightSum="1"
+        tools:ignore="MissingConstraints" />
 
     <include
         android:id="@+id/include"

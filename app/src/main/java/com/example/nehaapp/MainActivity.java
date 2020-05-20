@@ -1,6 +1,7 @@
 package com.example.nehaapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActionBar;
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if(item.getItemId()==R.id.ic_templates){
             Intent intent  = new Intent(this,TemplateGalleryActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent,100);
         }
 
         return true;
@@ -155,6 +156,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == 100) {
+            Toast.makeText(this,
+                    "Main actvity:" + data.getStringExtra("filename"),
+                    Toast.LENGTH_SHORT).show();
+            convertFiletoBitmap(data.getStringExtra("filename"));
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void convertFiletoBitmap(String filename){
+        String path = getApplicationContext().getCacheDir().getAbsolutePath() ;
+        final File fileimage = new File(path + "/" + filename);
+                FileInputStream is = null;
+                try {
+                    is = new FileInputStream(fileimage);
+
+                    Bitmap bmp = BitmapFactory.decodeStream(is);
+                    canvasNeha.setBitmap(bmp);
+                    is.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
     @Override
     public void onClick(View v) {

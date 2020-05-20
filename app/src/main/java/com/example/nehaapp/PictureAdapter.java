@@ -1,10 +1,12 @@
 package com.example.nehaapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,9 +20,15 @@ import java.util.ArrayList;
 public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyViewHolder> {
      ArrayList<File> mpictureList;
     private Context context;
+    ClickListener clickListener;
 
-    public PictureAdapter(ArrayList<File> pictureList) {
+    public PictureAdapter(ArrayList<File> pictureList)
+    {
         mpictureList = pictureList;
+    }
+
+    public void setClickListener(ClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -34,9 +42,18 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Picasso.with(context).load(mpictureList.get(position))
+        final File f = mpictureList.get(position);
+        Picasso.with(context).load(f)
                 .fit().centerCrop()
                 .into(holder.imageView);
+
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               // Toast.makeText(context,"Clicked" + f.getName(),Toast.LENGTH_SHORT).show();
+                clickListener.onClicked(f.getName());
+            }
+        });
 
     }
 
