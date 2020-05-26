@@ -79,6 +79,7 @@ public class CanvasNeha extends View {
 
         paint.setStrokeWidth(brushwidth);
         paint.setColor(brushColor);
+        paint.setAlpha(150);
         canvas.drawPath(path,paint);
 
     }
@@ -100,6 +101,7 @@ public class CanvasNeha extends View {
         for (Path p : paths) {
             paint.setStrokeWidth(widthHashMap.get(p));
             paint.setColor(colorHashMap.get(p));
+            paint.setAlpha(150);
             mCanvas.drawPath(p, paint);
         }
      invalidate();
@@ -204,6 +206,7 @@ public class CanvasNeha extends View {
 
     }
 
+    @SuppressLint("WrongThread")
     public void uploadFile(String filename){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);

@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,7 +38,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private String TAG = "Nehaapp";
+    private String TAG = "NehaappMainActivity";
     private CanvasNeha canvasNeha;
     private Button button1;
     private Button button2;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button button4;
     private Button button5;
     private Button button6;
+    private SeekBar seekbar;
     private int color;
     private String fileName;
     private StorageReference pathReference;
@@ -77,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button6.setOnClickListener(this);
 
 
-
         fileName = UUID.randomUUID().toString() + getString(R.string.image_extension_jpg);
         loadCanvaswithBackground();
 
@@ -108,47 +109,70 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        if(item.getItemId() == R.id.ic_undo)
-        {
-            canvasNeha.undo();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.ic_undo:
+                canvasNeha.undo();
+                return true;
+            case R.id.ic_redo:
+                canvasNeha.redo();
+                return true;
+            case R.id.ic_clear:
+                canvasNeha.clear();
+                return true;
+            case R.id.ic_save:
+                canvasNeha.uploadFile(fileName);
+                return true;
+            case R.id.ic_erase:
+                canvasNeha.erase();
+                return true;
+            case R.id.brush_size:
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                View layout = inflater.inflate(R.layout.brush_size,null);
+                builder.setView(layout);
 
-        }
-        if(item.getItemId()==R.id.ic_redo){
-            canvasNeha.redo();
-        }
-        if (item.getItemId()==R.id.ic_clear){
-            canvasNeha.clear();
-        }
-        if (item.getItemId()==R.id.ic_save){
-            canvasNeha.uploadFile(fileName);
-        }
-        if (item.getItemId()==R.id.ic_erase){
-            canvasNeha.erase();
-        }
-        if(item.getItemId()==R.id.brush_size){
-            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            View layout = inflater.inflate(R.layout.brush_size,null);
-            builder.setView(layout);
+                builder.show();
 
-            builder.show();
+                ImageView brushSmall = layout.findViewById(R.id.brush_small);
+                ImageView brushMedium = layout.findViewById(R.id.brush_medium);
+                ImageView brushLarge = layout.findViewById(R.id.brush_large);
 
-            ImageView brushSmall = layout.findViewById(R.id.brush_small);
-            ImageView brushMedium = layout.findViewById(R.id.brush_medium);
-            ImageView brushLarge = layout.findViewById(R.id.brush_large);
+                brushSmall.setImageDrawable(getResources().getDrawable(R.drawable.brush));
+                brushMedium.setImageDrawable(getResources().getDrawable(R.drawable.brush));
+                brushLarge.setImageDrawable(getResources().getDrawable(R.drawable.brush));
 
-            brushSmall.setImageDrawable(getResources().getDrawable(R.drawable.brush));
-            brushMedium.setImageDrawable(getResources().getDrawable(R.drawable.brush));
-            brushLarge.setImageDrawable(getResources().getDrawable(R.drawable.brush));
+                brushSmall.setOnClickListener((View.OnClickListener) this);
+                brushMedium.setOnClickListener((View.OnClickListener) this);
+                brushLarge.setOnClickListener((View.OnClickListener) this);
+                return true;
+            case R.id.ic_templates:
+                Intent intent  = new Intent(this,TemplateGalleryActivity.class);
+                startActivityForResult(intent,100);
+                return true;
+            case R.id.ic_transparency:
+                final AlertDialog.Builder Builder = new AlertDialog.Builder(this);
+                View transparencyLayout = inflater.inflate(R.layout.transparency_slider,null);
+                Builder.setView(transparencyLayout);
 
-            brushSmall.setOnClickListener((View.OnClickListener) this);
-            brushMedium.setOnClickListener((View.OnClickListener) this);
-            brushLarge.setOnClickListener((View.OnClickListener) this);
+                Builder.show();
 
-        }
-        if(item.getItemId()==R.id.ic_templates){
-            Intent intent  = new Intent(this,TemplateGalleryActivity.class);
-            startActivityForResult(intent,100);
+                seekbar = transparencyLayout.findViewById(R.id.seekBar);
+                seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        Log.d(TAG,"onProgressChanged ");
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        Log.d(TAG,"onStartTrackingTouch ");
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        Log.d(TAG,"onStopTrackingTouch ");
+                    }
+                });
+
         }
 
         return true;
