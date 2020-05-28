@@ -95,6 +95,7 @@ public class CanvasNeha extends View {
         mCanvas.drawColor(Color.WHITE);
 
     }
+    //Saving offline canvas
     private void saveOfflineCanvas(){
        bitmap.eraseColor(Color.WHITE);
        mCanvas.drawBitmap(template,0,0,null);
