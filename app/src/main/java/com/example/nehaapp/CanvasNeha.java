@@ -108,6 +108,7 @@ public class CanvasNeha extends View {
      invalidate();
     }
 
+    //Clear the canvas
     public void clear(){
       //  bitmap.eraseColor(Color.WHITE);
         for (Path p: paths){
