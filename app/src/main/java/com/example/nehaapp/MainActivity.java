@@ -116,6 +116,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ic_redo:
                 canvasNeha.redo();
                 return true;
+            case R.id.toolbarmenucontainer:
+                final AlertDialog.Builder Builder = new AlertDialog.Builder(this);
+                View Layout = inflater.inflate(R.layout.color,null);
+                builder.setView(Layout);
             case R.id.ic_clear:
                 canvasNeha.clear();
                 return true;
@@ -149,11 +153,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intent,100);
                 return true;
             case R.id.ic_transparency:
-                final AlertDialog.Builder Builder = new AlertDialog.Builder(this);
+                final AlertDialog.Builder mbuilder = new AlertDialog.Builder(this);
                 View transparencyLayout = inflater.inflate(R.layout.transparency_slider,null);
-                Builder.setView(transparencyLayout);
+                mbuilder.setView(transparencyLayout);
 
-                Builder.show();
+                mbuilder.show();
 
                 seekbar = transparencyLayout.findViewById(R.id.seekBar);
                 seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -212,6 +216,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.toolbarmenucontainer:
+
             case R.id.brush_small:
                 canvasNeha.brushwidth = 30;
                 break;
