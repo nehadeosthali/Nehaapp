@@ -34,29 +34,32 @@ import java.util.UUID;
 
 public class CanvasNeha extends View {
     private static final String TAG = "CanvasNeha";
-    private Path path;
+
     private  Paint paint;
     private float mX, mY;
     private Bitmap bitmap;
     private static final float TOUCH_TOLERANCE = 4;
-    private ArrayList<Path> paths = new ArrayList<Path>();
-    private ArrayList<Path> deletedpaths = new ArrayList<Path>();
+    private ArrayList<Drawing> drawingArrayList = new ArrayList<Drawing>();
+    private ArrayList<Drawing> deletedDrawingsArrayList = new ArrayList<Drawing>();
     private Canvas mCanvas;
+    private Drawing drawing;
+    private Path path;
 
     float brushwidth;
      int brushColor;
 
-    HashMap<Path, Integer> colorHashMap = new HashMap<>();
-    HashMap<Path, Float> widthHashMap = new HashMap<>();
+
     private int mWidth;
     private int mHeight;
     private Bitmap template;
+    private int PAINT_ALPHA;
+
 
 
     public CanvasNeha(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-
         path = new Path();
+        drawing = new Drawing();
         paint = new Paint();
         paint.setAntiAlias(true);
         paint.setDither(true);
@@ -68,6 +71,12 @@ public class CanvasNeha extends View {
 
     }
 
+    public void setPAINT_ALPHA(int PAINT_ALPHA) {
+        if (PAINT_ALPHA >=0 & PAINT_ALPHA <= 255){
+            this.PAINT_ALPHA = PAINT_ALPHA;
+        }
+
+    }
 
     @Override
     protected void onDraw(android.graphics.Canvas canvas) {
@@ -79,7 +88,7 @@ public class CanvasNeha extends View {
 
         paint.setStrokeWidth(brushwidth);
         paint.setColor(brushColor);
-        paint.setAlpha(150);
+        paint.setAlpha(PAINT_ALPHA);
         canvas.drawPath(path,paint);
 
     }
@@ -97,13 +106,19 @@ public class CanvasNeha extends View {
     }
     //Saving offline canvas
     private void saveOfflineCanvas(){
+        Paint offlinePaint = new Paint();
+        offlinePaint.setAntiAlias(true);
+        offlinePaint.setDither(true);
+        offlinePaint.setStyle(Paint.Style.STROKE);
+        offlinePaint.setStrokeJoin(Paint.Join.ROUND);
+        offlinePaint.setStrokeCap(Paint.Cap.ROUND);
        bitmap.eraseColor(Color.WHITE);
        mCanvas.drawBitmap(template,0,0,null);
-        for (Path p : paths) {
-            paint.setStrokeWidth(widthHashMap.get(p));
-            paint.setColor(colorHashMap.get(p));
-            paint.setAlpha(150);
-            mCanvas.drawPath(p, paint);
+        for (Drawing drawing : drawingArrayList) {
+            offlinePaint.setStrokeWidth(drawing.getWidth());
+            offlinePaint.setColor(drawing.getColor());
+            offlinePaint.setAlpha(drawing.getALPHA());
+            mCanvas.drawPath(drawing.getPath(), offlinePaint);
         }
      invalidate();
     }
@@ -111,10 +126,10 @@ public class CanvasNeha extends View {
     //Clear the canvas
     public void clear(){
       //  bitmap.eraseColor(Color.WHITE);
-        for (Path p: paths){
-           deletedpaths.add(p);
+        for (Drawing p: drawingArrayList){
+           deletedDrawingsArrayList.add(p);
         }
-        paths.clear();
+        drawingArrayList.clear();
         saveOfflineCanvas();
 
     }
@@ -144,10 +159,14 @@ public class CanvasNeha extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 path.lineTo(mX, mY);
+                Drawing drawing = new Drawing();
+                drawing.setPath(path);
+                drawing.setWidth(brushwidth);
+                drawing.setColor(brushColor);
+                drawing.setALPHA(PAINT_ALPHA);
+
                 // Added for undo and redo
-                paths.add(path);
-                widthHashMap.put(path, brushwidth);
-                colorHashMap.put(path, brushColor);
+                drawingArrayList.add(drawing);
                 // commit the path to our offscreen
                 saveOfflineCanvas();
                 path = new Path();
@@ -161,18 +180,18 @@ public class CanvasNeha extends View {
     }
 
     public void undo() {
-        if(paths.size() > 0) {
-            deletedpaths.add(paths.get(paths.size() - 1));
-            paths.remove(paths.get(paths.size() - 1));
+        if(drawingArrayList.size() > 0) {
+            deletedDrawingsArrayList.add(drawingArrayList.get(drawingArrayList.size() - 1));
+            drawingArrayList.remove(drawingArrayList.get(drawingArrayList.size() - 1));
 
             saveOfflineCanvas();
         }
     }
 
     public void redo() {
-        if(deletedpaths.size()>0) {
-            paths.add(deletedpaths.get(deletedpaths.size() - 1));
-            deletedpaths.remove(deletedpaths.get(deletedpaths.size() - 1));
+        if(deletedDrawingsArrayList.size()>0) {
+            drawingArrayList.add(deletedDrawingsArrayList.get(deletedDrawingsArrayList.size() - 1));
+            deletedDrawingsArrayList.remove(deletedDrawingsArrayList.get(deletedDrawingsArrayList.size() - 1));
 
             saveOfflineCanvas();
         }

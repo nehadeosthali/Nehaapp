@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AlertDialog.Builder builder;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,6 +165,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         Log.d(TAG,"onProgressChanged ");
+                        if (progress == 0){
+                            canvasNeha.setPAINT_ALPHA(0);
+                        }
+                        else if (progress > 0 & progress <=50){
+                            canvasNeha.setPAINT_ALPHA(progress+100);
+                        }
+                        else if (progress > 50 & progress <=100){
+                            canvasNeha.setPAINT_ALPHA(progress+155);
+                        }
                     }
 
                     @Override
