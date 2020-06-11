@@ -2,6 +2,7 @@ package com.example.nehaapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -45,8 +46,8 @@ public class CanvasNeha extends View {
     private Drawing drawing;
     private Path path;
 
-    float brushwidth;
-     int brushColor;
+    private float brushwidth;
+    private int brushColor;
 
 
     private int mWidth;
@@ -78,18 +79,27 @@ public class CanvasNeha extends View {
 
     }
 
+    public void setBrushwidth(float brushwidth) {
+        this.brushwidth = brushwidth;
+    }
+
+    public void setBrushColor(int brushColor) {
+        this.brushColor = brushColor;
+    }
+
     @Override
     protected void onDraw(android.graphics.Canvas canvas) {
         super.onDraw(canvas);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            //canvas.drawCircle(500,500,300,paint);
+            //canvas.drawColor(Color.RED);
+            canvas.drawBitmap(bitmap, 0, 0, null);
 
-        //canvas.drawCircle(500,500,300,paint);
-        //canvas.drawColor(Color.RED);
-        canvas.drawBitmap(bitmap, 0, 0, null);
-
-        paint.setStrokeWidth(brushwidth);
-        paint.setColor(brushColor);
-        paint.setAlpha(PAINT_ALPHA);
-        canvas.drawPath(path,paint);
+            paint.setStrokeWidth(brushwidth);
+            paint.setColor(brushColor);
+            paint.setAlpha(PAINT_ALPHA);
+            canvas.drawPath(path,paint);
+        }
 
     }
 
@@ -99,9 +109,11 @@ public class CanvasNeha extends View {
         Log.d(TAG, "onSizeChanged()");
         mWidth = w;
         mHeight = h;
-        bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(bitmap);
-        mCanvas.drawColor(Color.WHITE);
+        if (bitmap == null){
+            bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCanvas = new Canvas(bitmap);
+            mCanvas.drawColor(Color.WHITE);
+        }
 
     }
     //Saving offline canvas
@@ -201,6 +213,7 @@ public class CanvasNeha extends View {
     public void erase(){
         brushColor = Color.WHITE;
         brushwidth = 20;
+        setPAINT_ALPHA(255);
         saveOfflineCanvas();
     }
 

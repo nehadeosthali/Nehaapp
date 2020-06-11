@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -54,12 +56,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Log.d(TAG,"onCreate method called");
         setContentView(R.layout.activity_main);
         canvasNeha = findViewById(R.id.canvasNeha);
+        canvasNeha.setPAINT_ALPHA(100);
+        canvasNeha.setBrushwidth(30);
+        canvasNeha.setBrushColor(000000);
 
         button1 = findViewById(R.id.button1);
         button1.setOnClickListener(this);
@@ -166,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         Log.d(TAG,"onProgressChanged ");
                         if (progress == 0){
-                            canvasNeha.setPAINT_ALPHA(0);
+                            canvasNeha.setPAINT_ALPHA(10);
                         }
                         else if (progress > 0 & progress <=50){
                             canvasNeha.setPAINT_ALPHA(progress+100);
@@ -229,37 +236,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.toolbarmenucontainer:
 
             case R.id.brush_small:
-                canvasNeha.brushwidth = 30;
+                canvasNeha.setBrushwidth(30);
                 break;
             case R.id.brush_medium:
-                canvasNeha.brushwidth = 40;
+                canvasNeha.setBrushwidth(40);
                 break;
             case R.id.brush_large:
-                canvasNeha.brushwidth = 50;
+                canvasNeha.setBrushwidth(50);
                 break;
             case R.id.button1:
                 color = ((ColorDrawable)button1.getBackground()).getColor();
-                canvasNeha.brushColor = color;
+                canvasNeha.setBrushColor(color);
                 break;
             case R.id.button2:
                 color = ((ColorDrawable)button2.getBackground()).getColor();
-                canvasNeha.brushColor = color;
+                canvasNeha.setBrushColor(color);
                 break;
             case R.id.button3:
                 color = ((ColorDrawable)button3.getBackground()).getColor();
-                canvasNeha.brushColor = color;
+                canvasNeha.setBrushColor(color);
                 break;
             case R.id.button4:
                 color = ((ColorDrawable)button4.getBackground()).getColor();
-                canvasNeha.brushColor = color;
+                canvasNeha.setBrushColor(color);
                 break;
             case R.id.button5:
                 color = ((ColorDrawable)button5.getBackground()).getColor();
-                canvasNeha.brushColor = color;
+                canvasNeha.setBrushColor(color);
                 break;
             case R.id.button6:
                 color = ((ColorDrawable)button6.getBackground()).getColor();
-                canvasNeha.brushColor = color;
+                canvasNeha.setBrushColor(color);
                 break;
         }
 

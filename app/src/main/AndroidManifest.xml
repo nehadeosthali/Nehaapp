@@ -11,7 +11,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".TemplateGalleryActivity"></activity>
         <activity android:name=".FirebaseTest"></activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
