@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -32,6 +33,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.ColorPickerView;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -137,6 +142,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ic_erase:
                 canvasNeha.erase();
                 return true;
+            case R.id.colorpickerdialog:
+                new ColorPickerDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+                        .setTitle("ColorPicker Dialog")
+                        .setPreferenceName("MyColorPickerDialog")
+                        .setPositiveButton("Confirm",
+                                new ColorEnvelopeListener() {
+                                    @Override
+                                    public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                                        canvasNeha.setBrushColor(envelope.getColor());
+                                        //setLayoutColor(envelope);
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                })
+                        .attachAlphaSlideBar(true) // default is true. If false, do not show the AlphaSlideBar.
+                        .attachBrightnessSlideBar(true)  // default is true. If false, do not show the BrightnessSlideBar.
+                        .show();
             case R.id.brush_size:
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 View layout = inflater.inflate(R.layout.brush_size,null);
