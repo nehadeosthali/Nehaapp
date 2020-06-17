@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button button4;
     private Button button5;
     private Button button6;
+    private Button colorpickerdialog;
     private SeekBar seekbar;
     private int color;
     private String fileName;
@@ -90,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         button6 = findViewById(R.id.button6);
         button6.setOnClickListener(this);
+
+        colorpickerdialog = findViewById(R.id.colorpickerdialog);
+        colorpickerdialog.setOnClickListener(this);
 
 
         fileName = UUID.randomUUID().toString() + getString(R.string.image_extension_jpg);
@@ -142,28 +146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ic_erase:
                 canvasNeha.erase();
                 return true;
-            case R.id.colorpickerdialog:
-                new ColorPickerDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
-                        .setTitle("ColorPicker Dialog")
-                        .setPreferenceName("MyColorPickerDialog")
-                        .setPositiveButton("Confirm",
-                                new ColorEnvelopeListener() {
-                                    @Override
-                                    public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                                        canvasNeha.setBrushColor(envelope.getColor());
-                                        //setLayoutColor(envelope);
-                                    }
-                                })
-                        .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
-                                    }
-                                })
-                        .attachAlphaSlideBar(true) // default is true. If false, do not show the AlphaSlideBar.
-                        .attachBrightnessSlideBar(true)  // default is true. If false, do not show the BrightnessSlideBar.
-                        .show();
+
             case R.id.brush_size:
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 View layout = inflater.inflate(R.layout.brush_size,null);
@@ -295,6 +278,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 color = ((ColorDrawable)button6.getBackground()).getColor();
                 canvasNeha.setBrushColor(color);
                 break;
+            case R.id.colorpickerdialog:
+                new ColorPickerDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_DARK)
+                        .setTitle("ColorPicker Dialog")
+                        .setPreferenceName("MyColorPickerDialog")
+                        .setPositiveButton("Confirm",
+                                new ColorEnvelopeListener() {
+                                    @Override
+                                    public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                                        canvasNeha.setBrushColor(envelope.getColor());
+                                        //setLayoutColor(envelope);
+                                    }
+                                })
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dialogInterface.dismiss();
+                                    }
+                                })
+                        .attachAlphaSlideBar(true) // default is true. If false, do not show the AlphaSlideBar.
+                        .attachBrightnessSlideBar(true)  // default is true. If false, do not show the BrightnessSlideBar.
+                        .show();
         }
 
     }
