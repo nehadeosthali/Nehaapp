@@ -170,6 +170,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent  = new Intent(this,TemplateGalleryActivity.class);
                 startActivityForResult(intent,100);
                 return true;
+            case R.id.ic_save_gallery:
+                Intent Intent  = new Intent(this,SavedPicturesGallery.class);
+                startActivityForResult(Intent, 200);
+                return true;
+
             case R.id.ic_transparency:
                 final AlertDialog.Builder mbuilder = new AlertDialog.Builder(this);
                 View transparencyLayout = inflater.inflate(R.layout.transparency_slider,null);
@@ -213,12 +218,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode == 100) {
+        if(requestCode == 100 || requestCode == 200 ) {
             Toast.makeText(this,
                     "Main actvity:" + data.getStringExtra("filename"),
                     Toast.LENGTH_SHORT).show();
             convertFiletoBitmap(data.getStringExtra("filename"));
         }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 

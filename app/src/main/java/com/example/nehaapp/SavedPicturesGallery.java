@@ -10,10 +10,13 @@ import java.util.ArrayList;
 public class SavedPicturesGallery extends AppCompatActivity {
     RecyclerView recyclerView;
     ArrayList <String> pictures;
+    private PictureAdapter PictureAdapter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.template_gallery);
+        setContentView(R.layout.recycler_layout);
 
 
     }
