@@ -29,6 +29,8 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -69,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Log.d(TAG,"onCreate method called");
         setContentView(R.layout.activity_main);
+
+
         canvasNeha = findViewById(R.id.canvasNeha);
         canvasNeha.setPAINT_ALPHA(100);
         canvasNeha.setBrushwidth(30);
