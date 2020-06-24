@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "799485393671-igh8met7j215pcumisg45ngpaumff8o3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nehaapp",
+            "certificate_hash": "3f87b84db0cc2e73210d70b0926f0046b45d41ac"
+          }
+        },
+        {
           "client_id": "799485393671-067mr91364h93g9uau09qbbe69ouubme.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -28,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "799485393671-067mr91364h93g9uau09qbbe69ouubme.apps.googleusercontent.com",
+              "client_id": "799485393671-mlk8o3j9ub5oflnm0slkgr8ahdvmbu24.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

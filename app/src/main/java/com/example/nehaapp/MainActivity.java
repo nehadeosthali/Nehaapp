@@ -30,8 +30,17 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -61,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String fileName;
     private StorageReference pathReference;
     private AlertDialog.Builder builder;
-
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -72,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG,"onCreate method called");
         setContentView(R.layout.activity_main);
 
+        mAuth = FirebaseAuth.getInstance();
+
+        getSupportActionBar().setTitle(mAuth.getCurrentUser().getEmail());
 
         canvasNeha = findViewById(R.id.canvasNeha);
         canvasNeha.setPAINT_ALPHA(100);
@@ -114,6 +127,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        });
 
     }
+
+
+    private void updateUI(FirebaseUser account) {
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
+    }
+
+
 
     @Override
     protected void onRestart() {
