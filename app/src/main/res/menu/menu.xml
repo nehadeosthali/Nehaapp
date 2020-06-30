@@ -63,6 +63,11 @@
         android:icon="@android:drawable/btn_star"
         android:title=""
         app:showAsAction="always" />
+    <item
+        android:id="@+id/ic_signOut"
+        android:icon="@android:drawable/ic_menu_revert"
+        android:title=""
+        app:showAsAction="always" />
 
 
 </menu>

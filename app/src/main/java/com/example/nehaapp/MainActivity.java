@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AlertDialog.Builder builder;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    private GoogleSignInClient mGoogleSignInClient;
 
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -114,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         fileName = UUID.randomUUID().toString() + getString(R.string.image_extension_jpg);
-        loadCanvaswithBackground();
+        //loadCanvaswithBackground();
 
 
 //        Button clearbutton = findViewById(R.id.clearButton);
@@ -177,6 +179,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ic_erase:
                 canvasNeha.erase();
                 return true;
+            case R.id.ic_signOut:
+                signOut();
 
             case R.id.brush_size:
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -244,6 +248,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         return true;
 
+    }
+    private void signOut(){
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        FirebaseAuth.getInstance().signOut();
+                        Intent loginIntent = new Intent(getApplicationContext(), com.example.nehaapp.LoginActivity.class);
+                        startActivity(loginIntent);
+                        // ...
+                    }
+                });
     }
 
 
@@ -341,31 +364,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void loadCanvaswithBackground(){
-        pathReference = FirebaseStorage.getInstance()
-                .getReferenceFromUrl("gs://drawing-app-72e25.appspot.com/elephant.png");
-        final File localFile = new File(getApplicationContext().getCacheDir().getAbsolutePath() +
-                "/" + "elephant.png");
-        pathReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                FileInputStream is = null;
-                try {
-                    is = new FileInputStream(localFile);
+//    private void loadCanvaswithBackground(){
+//        pathReference = FirebaseStorage.getInstance()
+//                .getReferenceFromUrl("gs://drawing-app-72e25.appspot.com/elephant.png");
+//        final File localFile = new File(getApplicationContext().getCacheDir().getAbsolutePath() +
+//                "/" + "elephant.png");
+//        pathReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+//            @Override
+//            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+//                FileInputStream is = null;
+//                try {
+//                    is = new FileInputStream(localFile);
+//
+//                    Bitmap bmp = BitmapFactory.decodeStream(is);
+//                    canvasNeha.setBitmap(bmp);
+//                    is.close();
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//                catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
 
-                    Bitmap bmp = BitmapFactory.decodeStream(is);
-                    canvasNeha.setBitmap(bmp);
-                    is.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
 
 
-    }
 }

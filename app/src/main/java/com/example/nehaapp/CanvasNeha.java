@@ -20,6 +20,8 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -130,7 +132,9 @@ public class CanvasNeha extends View {
         offlinePaint.setStrokeJoin(Paint.Join.ROUND);
         offlinePaint.setStrokeCap(Paint.Cap.ROUND);
        bitmap.eraseColor(Color.WHITE);
-       mCanvas.drawBitmap(template,0,0,null);
+       if(template!=null) {
+           mCanvas.drawBitmap(template, 0, 0, null);
+       }
         for (Drawing drawing : drawingArrayList) {
             offlinePaint.setStrokeWidth(drawing.getWidth());
             offlinePaint.setColor(drawing.getColor());
@@ -153,7 +157,7 @@ public class CanvasNeha extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Toast.makeText(getContext(),"X = " + event.getX(),Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(),"X = " + event.getX(),Toast.LENGTH_SHORT).show();
         float x = event.getX();
         float y = event.getY();
         switch (event.getAction()) {
@@ -253,43 +257,52 @@ public class CanvasNeha extends View {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReference();
-        StorageReference imageRef = storageRef.child("images/"+ filename +".png");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            StorageReference imageRef = storageRef.child(user.getEmail()).child(filename +".png");
 
-        UploadTask uploadTask = imageRef.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
+            UploadTask uploadTask = imageRef.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
 
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
-            }
-        });
-        // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("users");
-
-        myRef.child("neha").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    Log.d(TAG,postSnapshot.getKey());
-                    Log.d(TAG,postSnapshot.getValue().toString());
+                    // Handle unsuccessful uploads
                 }
-            }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                }
+            });
+            // Write a message to the database
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("users");
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            myRef.child("neha").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                        Log.d(TAG,postSnapshot.getKey());
+                        Log.d(TAG,postSnapshot.getValue().toString());
+                    }
+                }
 
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        } else {
+            saveFile(filename);
+            // No user is signed in
+        }
+
 
 
     }
+
+
 
     private String getRandomID(){
         return UUID.randomUUID().toString();
