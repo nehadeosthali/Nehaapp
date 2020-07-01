@@ -261,6 +261,9 @@ public class CanvasNeha extends View {
         if (user != null) {
             StorageReference imageRef = storageRef.child(user.getEmail()).child(filename +".png");
 
+
+
+
             UploadTask uploadTask = imageRef.putBytes(data);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override

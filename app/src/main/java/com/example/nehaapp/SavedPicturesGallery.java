@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class SavedPicturesGallery extends AppCompatActivity {
     RecyclerView recyclerView;
-    ArrayList <String> pictures;
+    ArrayList <String> savedPictures;
     private PictureAdapter PictureAdapter;
 
 
@@ -17,6 +17,7 @@ public class SavedPicturesGallery extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recycler_layout);
+
 
 
     }

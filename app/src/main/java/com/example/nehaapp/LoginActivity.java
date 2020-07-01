@@ -27,6 +27,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -42,6 +47,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private GoogleSignInAccount account;
     private static final int RC_SIGN_IN = 0;
     private String notificationToken="dummyToken";
+    private FirebaseUser user;
+    private DatabaseReference databaseReference;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +60,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginbutton.setOnClickListener(this);
 
         mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
 
         // Configure sign-in to request the user's ID, email address, and basic
@@ -80,8 +89,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Intent intent  = new Intent(getApplicationContext(),MainActivity.class);
+
+
+
+                                Intent intent  = new Intent(getApplicationContext(),MainActivity.class);
                             startActivity(intent);
 
                         } else {
@@ -146,6 +157,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         }
 */
+ @RequiresApi(api = Build.VERSION_CODES.KITKAT)
  @Override
  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
      super.onActivityResult(requestCode, resultCode, data);
@@ -170,6 +182,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                              // Get new Instance ID token
                              notificationToken = Objects.requireNonNull(task.getResult()).getToken();
 
+
+//                             String email = user.getEmail().replace(".", ",");
+//                             FirebaseDatabase database = FirebaseDatabase.getInstance();
+//                             DatabaseReference myRef = database.getReference();
+//                             myRef.child("users").child("neha").addListenerForSingleValueEvent(new ValueEventListener() {
+//                                 @Override
+//                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                                 }
+//
+//                                 @Override
+//                                 public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                 }
+//                             });
+                             addUsertoDatabase(firebaseUser);
 
                              Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                              startActivity(intent);
@@ -202,5 +230,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    private void addUsertoDatabase(final FirebaseUser firebaseUser) {
+             final String email;
+             email = firebaseUser.getEmail().replace(".",",");
+
+             final DatabaseUser databaseUser = new DatabaseUser(firebaseUser.getEmail());
+             databaseUser.setName(firebaseUser.getDisplayName());
+
+
+        final FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = mFirebaseDatabase.getReference("users");
+        databaseReference.child(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+                    databaseReference.child(email).setValue(databaseUser);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
 
 }
