@@ -22,12 +22,13 @@ public class TemplateGalleryActivity extends AppCompatActivity implements ClickL
     RecyclerView recyclerView;
     private PictureAdapter pictureAdapter;
     ArrayList<String> pictureList;
+    private ArrayList<File> localPictureList;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final ArrayList<File>  localPictureList = new ArrayList<>();
+
         pictureList = new ArrayList();
         pictureList.add("gs://drawing-app-72e25.appspot.com/elephant.png");
         pictureList.add("gs://drawing-app-72e25.appspot.com/Sunflower.jpg");
@@ -38,6 +39,12 @@ public class TemplateGalleryActivity extends AppCompatActivity implements ClickL
         pictureList.add("gs://drawing-app-72e25.appspot.com/pony.jpg");
         pictureList.add("gs://drawing-app-72e25.appspot.com/turtle.png");
         pictureList.add("gs://drawing-app-72e25.appspot.com/whale.jpg");
+
+    }
+
+
+    public void updateAdapter(final ArrayList<String> pictureList){
+        final ArrayList<File>  localPictureList = new ArrayList<>();
         int i = 1;
         for(String picture : pictureList){
             pictureAdapter = new PictureAdapter(localPictureList);
@@ -72,10 +79,7 @@ public class TemplateGalleryActivity extends AppCompatActivity implements ClickL
         }
 
 
-
-
     }
-
     @Override
     public void onClicked(String fname) {
         //Toast.makeText(this,"I am templategallery activity",Toast.LENGTH_SHORT).show();

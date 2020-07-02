@@ -8,6 +8,9 @@ public class DatabaseUser {
     private String name;
     private ArrayList<String> savedPictures;
 
+    public DatabaseUser() {
+    }
+
     public DatabaseUser(String email) {
         this.email = email;
     }

@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.provider.ContactsContract;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -61,7 +62,7 @@ public class CanvasNeha extends View {
     private int mHeight;
     private Bitmap template;
     private int PAINT_ALPHA;
-
+    private ArrayList<String> savedPictures;
 
 
     public CanvasNeha(Context context, @Nullable AttributeSet attrs) {
@@ -250,16 +251,42 @@ public class CanvasNeha extends View {
     }
 
     @SuppressLint("WrongThread")
-    public void uploadFile(String filename){
+    public void uploadFile(final String filename){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
         byte[] data = baos.toByteArray();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReference();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            StorageReference imageRef = storageRef.child(user.getEmail()).child(filename +".png");
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            StorageReference imageRef = storageRef.child(replaceEmailwithComma(firebaseUser.getEmail())).child(filename);
+
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            final DatabaseReference myRef = database.getReference("users");
+            final String email = user.getEmail().replace(".", ",");
+            myRef.child(email).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    DatabaseUser databaseUser = (DatabaseUser) dataSnapshot.getValue(DatabaseUser.class);
+
+                    savedPictures = new ArrayList();
+                    if (databaseUser.getSavedPictures() != null) {
+                        savedPictures = databaseUser.getSavedPictures();
+
+                    }
+                    savedPictures.add(filename);
+                    databaseUser.setSavedPictures(savedPictures);
+                    myRef.child(email).setValue(databaseUser);
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
 
 
 
@@ -279,23 +306,7 @@ public class CanvasNeha extends View {
                 }
             });
             // Write a message to the database
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("users");
 
-            myRef.child("neha").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                        Log.d(TAG,postSnapshot.getKey());
-                        Log.d(TAG,postSnapshot.getValue().toString());
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
         } else {
             saveFile(filename);
             // No user is signed in
@@ -303,6 +314,13 @@ public class CanvasNeha extends View {
 
 
 
+    }
+
+    private void addImagetoDatabase (){
+
+    }
+    private String replaceEmailwithComma(String email){
+        return email.replace(".",",");
     }
 
 
