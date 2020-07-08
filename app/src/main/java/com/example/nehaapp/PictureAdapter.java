@@ -27,6 +27,7 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyViewHo
         mpictureList = pictureList;
     }
 
+
     public void setClickListener(ClickListener clickListener) {
         this.clickListener = clickListener;
     }

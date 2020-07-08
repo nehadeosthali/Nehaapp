@@ -53,6 +53,7 @@ public class CanvasNeha extends View {
     private Canvas mCanvas;
     private Drawing drawing;
     private Path path;
+    boolean clearFlag = true;
 
     private float brushwidth;
     private int brushColor;
@@ -146,7 +147,9 @@ public class CanvasNeha extends View {
     }
 
     //Clear the canvas
+
     public void clear(){
+
       //  bitmap.eraseColor(Color.WHITE);
         for (Drawing p: drawingArrayList){
            deletedDrawingsArrayList.add(p);
@@ -202,6 +205,7 @@ public class CanvasNeha extends View {
     }
 
     public void undo() {
+        clearFlag = false;
         if(drawingArrayList.size() > 0) {
             deletedDrawingsArrayList.add(drawingArrayList.get(drawingArrayList.size() - 1));
             drawingArrayList.remove(drawingArrayList.get(drawingArrayList.size() - 1));
@@ -211,11 +215,20 @@ public class CanvasNeha extends View {
     }
 
     public void redo() {
-        if(deletedDrawingsArrayList.size()>0) {
-            drawingArrayList.add(deletedDrawingsArrayList.get(deletedDrawingsArrayList.size() - 1));
-            deletedDrawingsArrayList.remove(deletedDrawingsArrayList.get(deletedDrawingsArrayList.size() - 1));
+        if (clearFlag){
+            for (Drawing drawing:deletedDrawingsArrayList){
+                drawingArrayList.add(drawing);
 
+            }
+            deletedDrawingsArrayList.clear();
             saveOfflineCanvas();
+        }
+        else if (deletedDrawingsArrayList.size()>0) {
+            drawingArrayList.add(deletedDrawingsArrayList.remove(deletedDrawingsArrayList.size() - 1));
+//            drawingArrayList.add(deletedDrawingsArrayList.get(deletedDrawingsArrayList.size() - 1));
+//            deletedDrawingsArrayList.remove(deletedDrawingsArrayList.get(deletedDrawingsArrayList.size() - 1));
+            saveOfflineCanvas();
+
         }
 
     }

@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class SavedPicturesGalleryActivity extends TemplateGalleryActivity {
@@ -29,20 +30,26 @@ public class SavedPicturesGalleryActivity extends TemplateGalleryActivity {
         setContentView(R.layout.recycler_layout);
 
 
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference myRef = database.getReference("users");
-        final String email = firebaseUser.getEmail().replace(".", ",");
+        final String email = user.getEmail().replace(".", ",");
         myRef.child(email).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 DatabaseUser databaseUser = (DatabaseUser) dataSnapshot.getValue(DatabaseUser.class);
 
-
+                savedPictures = new ArrayList();
                 if (databaseUser.getSavedPictures() != null) {
                     savedPictures = databaseUser.getSavedPictures();
+                    pictureList = new ArrayList<>();
+                    for(String picture:savedPictures){
+                        pictureList.add("gs://drawing-app-72e25.appspot.com/"+email+"/"+picture);
 
+                    }
+                    updateAdapter(pictureList);
                 }
+
 
             }
 
@@ -52,11 +59,8 @@ public class SavedPicturesGalleryActivity extends TemplateGalleryActivity {
             }
         });
 
-        pictureList = new ArrayList<>();
-        for (String filename : savedPictures) {
-            pictureList.add("gs://drawing-app-72e25.appspot.com/" + email +"/" + filename);
-        }
-        updateAdapter(pictureList);
+
+
     }
 
 
