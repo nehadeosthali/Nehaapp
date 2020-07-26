@@ -49,6 +49,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private String notificationToken="dummyToken";
     private FirebaseUser user;
     private DatabaseReference databaseReference;
+    //private Button next;
+    //private Button guest;
 
 
     @Override
@@ -57,10 +59,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.login_screen);
 
         loginbutton = findViewById(R.id.loginbutton);
+
         loginbutton.setOnClickListener(this);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+
+
 
 
         // Configure sign-in to request the user's ID, email address, and basic
@@ -75,6 +81,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // Check for existing Google Sign In account, if the user is already signed in
 // the GoogleSignInAccount will be non-null.
         account = GoogleSignIn.getLastSignedInAccount(this);
+
+
+        //ADDED!!!
+        Button next = (Button) findViewById(R.id.Guest);
+        next.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent myIntent = new Intent(view.getContext(), MainActivity.class);
+                startActivity(myIntent);
+            }
+
+        });
 
     }
 
@@ -253,5 +270,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         });
     }
-
-}
+    }
