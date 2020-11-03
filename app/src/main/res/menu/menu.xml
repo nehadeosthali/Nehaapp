@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <item
+  <!--  <item
         android:id="@+id/ic_undo"
         android:icon="@drawable/abc_vector_test"
         android:title=""
@@ -20,7 +20,7 @@
         android:id="@+id/ic_clear"
         android:icon="@android:drawable/ic_menu_close_clear_cancel"
         android:title=""
-        app:showAsAction="always" />
+        app:showAsAction="always" />-->
     <item
         android:id="@+id/brush_size"
         android:icon="@drawable/brush"
@@ -66,6 +66,11 @@
     <item
         android:id="@+id/ic_signOut"
         android:icon="@android:drawable/ic_menu_revert"
+        android:title=""
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/ic_zoom"
+        android:icon="@android:drawable/ic_menu_zoom"
         android:title=""
         app:showAsAction="always" />
 

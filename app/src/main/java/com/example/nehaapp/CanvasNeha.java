@@ -54,6 +54,7 @@ public class CanvasNeha extends View {
     private Drawing drawing;
     private Path path;
     boolean clearFlag = true;
+    boolean zoomMode = false;
 
     private float brushwidth;
     private int brushColor;
@@ -161,47 +162,55 @@ public class CanvasNeha extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //Toast.makeText(getContext(),"X = " + event.getX(),Toast.LENGTH_SHORT).show();
-        float x = event.getX();
-        float y = event.getY();
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                path.reset();
-                path.moveTo(x, y);
-                mX = x;
-                mY = y;
-                invalidate();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                float dx = Math.abs(x - mX);
-                float dy = Math.abs(y - mY);
-                if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-                    path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+        if (!zoomMode) {
+            //Toast.makeText(getContext(),"X = " + event.getX(),Toast.LENGTH_SHORT).show();
+            float x = event.getX();
+            float y = event.getY();
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    path.reset();
+                    path.moveTo(x, y);
                     mX = x;
                     mY = y;
-                }
-                invalidate();
-                break;
-            case MotionEvent.ACTION_UP:
-                path.lineTo(mX, mY);
-                Drawing drawing = new Drawing();
-                drawing.setPath(path);
-                drawing.setWidth(brushwidth);
-                drawing.setColor(brushColor);
-                drawing.setALPHA(PAINT_ALPHA);
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    float dx = Math.abs(x - mX);
+                    float dy = Math.abs(y - mY);
+                    if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+                        path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                        mX = x;
+                        mY = y;
+                    }
+                    invalidate();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    path.lineTo(mX, mY);
+                    Drawing drawing = new Drawing();
+                    drawing.setPath(path);
+                    drawing.setWidth(brushwidth);
+                    drawing.setColor(brushColor);
+                    drawing.setALPHA(PAINT_ALPHA);
 
-                // Added for undo and redo
-                drawingArrayList.add(drawing);
-                // commit the path to our offscreen
-                saveOfflineCanvas();
-                path = new Path();
-                // kill this so we don't double draw
-                path.reset();
-                invalidate();
-                break;
+                    // Added for undo and redo
+                    drawingArrayList.add(drawing);
+                    // commit the path to our offscreen
+                    saveOfflineCanvas();
+                    path = new Path();
+                    // kill this so we don't double draw
+                    path.reset();
+                    invalidate();
+                    break;
+            }
         }
 
-        return true;
+            else{
+
+
+            }
+            return true;
+
+
     }
 
     public void undo() {
@@ -345,5 +354,9 @@ public class CanvasNeha extends View {
     public void setBitmap(Bitmap bmp) {
         template = Bitmap.createScaledBitmap(bmp,mWidth,mHeight,false);
         saveOfflineCanvas();
+    }
+
+    public void setZoomMode(boolean b) {
+        zoomMode = b;
     }
 }

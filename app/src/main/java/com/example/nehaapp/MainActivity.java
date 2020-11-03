@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button button5;
     private Button button6;
     private Button colorpickerdialog;
+    private ToggleButton zoomButton;
     private SeekBar seekbar;
     private int color;
     private String fileName;
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private GoogleSignInClient mGoogleSignInClient;
+
 
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -100,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         colorpickerdialog = findViewById(R.id.colorpickerdialog);
         colorpickerdialog.setOnClickListener(this);
+
+        zoomButton = findViewById(R.id.zoombutton);
+        zoomButton.setOnClickListener(this);
 
 
         fileName = UUID.randomUUID().toString() + getString(R.string.image_extension_jpg);
@@ -147,19 +154,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         switch (item.getItemId()) {
-            case R.id.ic_undo:
+          /*  case R.id.ic_undo:
                 canvasNeha.undo();
                 return true;
             case R.id.ic_redo:
                 canvasNeha.redo();
-                return true;
+                return true;*/
             case R.id.toolbarmenucontainer:
                 final AlertDialog.Builder Builder = new AlertDialog.Builder(this);
                 View Layout = inflater.inflate(R.layout.color,null);
                 builder.setView(Layout);
-            case R.id.ic_clear:
+           /* case R.id.ic_clear:
                 canvasNeha.clear();
-                return true;
+                return true;*/
             case R.id.ic_save:
                 canvasNeha.uploadFile(fileName);
                 return true;
@@ -347,7 +354,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .attachAlphaSlideBar(true) // default is true. If false, do not show the AlphaSlideBar.
                         .attachBrightnessSlideBar(true)  // default is true. If false, do not show the BrightnessSlideBar.
                         .show();
+                break;
+
+            case R.id.zoombutton:
+                if (zoomButton.isChecked()) {
+                    zoomButton.setBackgroundColor(Color.GREEN);
+                    canvasNeha.setZoomMode(true);
+                } else {
+                    zoomButton.setBackgroundColor(Color.RED);
+                    canvasNeha.setZoomMode(false);
+                }
+
+
         }
+
+
 
     }
 
