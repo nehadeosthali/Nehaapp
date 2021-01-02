@@ -12,6 +12,7 @@ import android.provider.ContactsContract;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -40,6 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static android.view.MotionEvent.INVALID_POINTER_ID;
+
 
 public class CanvasNeha extends View {
     private static final String TAG = "CanvasNeha";
@@ -55,10 +58,19 @@ public class CanvasNeha extends View {
     private Path path;
     boolean clearFlag = true;
     boolean zoomMode = false;
-
+    private float mScaleFactor = 1.0f;
+    private final static float mMinZoom = 1.0f;
+    private final static float mMaxZoom = 5.0f;
+    private final ScaleGestureDetector mScaleDetector;
+    private float mLastTouchX;
+    private float mLastTouchY;
     private float brushwidth;
     private int brushColor;
-
+    private int mActivePointerID = INVALID_POINTER_ID;
+    private int mImageWidth;
+    private int mImageHeight;
+    private float mPositionX;
+    private float mPositionY;
 
     private int mWidth;
     private int mHeight;
@@ -79,6 +91,7 @@ public class CanvasNeha extends View {
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeCap(Paint.Cap.ROUND);
 
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 
     }
 
@@ -100,15 +113,44 @@ public class CanvasNeha extends View {
     @Override
     protected void onDraw(android.graphics.Canvas canvas) {
         super.onDraw(canvas);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            //canvas.drawCircle(500,500,300,paint);
-            //canvas.drawColor(Color.RED);
-            canvas.drawBitmap(bitmap, 0, 0, null);
+        if(!zoomMode) {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                //canvas.drawCircle(500,500,300,paint);
+                //canvas.drawColor(Color.RED);
+                canvas.drawBitmap(bitmap, 0, 0, null);
 
-            paint.setStrokeWidth(brushwidth);
-            paint.setColor(brushColor);
-            paint.setAlpha(PAINT_ALPHA);
-            canvas.drawPath(path,paint);
+                paint.setStrokeWidth(brushwidth);
+                paint.setColor(brushColor);
+                paint.setAlpha(PAINT_ALPHA);
+                canvas.drawPath(path, paint);
+            }
+        }
+        else{
+            if (bitmap != null) {
+                canvas.save();
+                if ((mPositionX * -1) < 0) {
+                    mPositionX = 0;
+                } else if ((mPositionX * -1) > mImageWidth * mScaleFactor - getWidth()) {
+                    mPositionX = (mImageWidth * mScaleFactor - getWidth()) * -1;
+                }
+                if ((mPositionY * -1) < 0) {
+                    mPositionY = 0;
+                } else if ((mPositionY * -1) > mImageHeight * mScaleFactor - getHeight()) {
+                    mPositionY = (mImageHeight * mScaleFactor - getHeight()) * -1;
+                }
+                if ((mImageHeight * mScaleFactor) < getHeight()) {
+                    mPositionY = 0;
+                }
+                canvas.translate(mPositionX, mPositionY);
+                canvas.scale(mScaleFactor, mScaleFactor);
+                //setBackground(new BitmapDrawable(getResources(), backgroundBitmap));
+               /* if (backgroundBitmap != null && !backgroundBitmap.isRecycled()) {
+                    backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap, mImageWidth, mImageHeight, false);
+                    canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+                }*/
+                canvas.drawBitmap(bitmap, 0, 0, null);
+                canvas.restore();
+            }
         }
 
     }
@@ -206,8 +248,65 @@ public class CanvasNeha extends View {
 
             else{
 
+                //the scale gesture detector should inspect all the touch events
+                mScaleDetector.onTouchEvent(event);
+                final int action = event.getAction();
+                switch (action & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN: {
+                        //get x and y cords of where we touch the screen
+                        final float x = event.getX();
+                        final float y = event.getY();
+                        //remember where touch event started
+                        mLastTouchX = x;
+                        mLastTouchY = y;
+                        //save the ID of this pointer
+                        mActivePointerID = event.getPointerId(0);
+                        break;
+                    }
+                    case MotionEvent.ACTION_MOVE: {
+                        //find the index of the active pointer and fetch its position
+                        final int pointerIndex = event.findPointerIndex(mActivePointerID);
+                        if(pointerIndex >= 0 ) {
+                            final float x = event.getX(pointerIndex);
+                            final float y = event.getY(pointerIndex);
+                            if (!mScaleDetector.isInProgress()) {
+                                //calculate the distance in x and y directions
+                                final float distanceX = x - mLastTouchX;
+                                final float distanceY = y - mLastTouchY;
+                                mPositionX += distanceX;
+                                mPositionY += distanceY;
+                                //redraw canvas call onDraw method
+                                invalidate();
 
+                            }
+                            //remember this touch position for next move event
+                            mLastTouchX = x;
+                            mLastTouchY = y;
+                        }
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL: {
+                        mActivePointerID = INVALID_POINTER_ID;
+                        break;
+                    }
+                    case MotionEvent.ACTION_POINTER_UP: {
+                        //Extract the index of the pointer that left the screen
+                        final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                        final int pointerId = event.getPointerId(pointerIndex);
+                        if (pointerId == mActivePointerID) {
+                            //Our active pointer is going up Choose another active pointer and adjust
+                            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                            mLastTouchX = event.getX(newPointerIndex);
+                            mLastTouchY = event.getY(newPointerIndex);
+                            mActivePointerID = event.getPointerId(newPointerIndex);
+                        }
+                        break;
+                    }
+                }
+                return true;
             }
+
             return true;
 
 
@@ -358,5 +457,16 @@ public class CanvasNeha extends View {
 
     public void setZoomMode(boolean b) {
         zoomMode = b;
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+            mScaleFactor *= scaleGestureDetector.getScaleFactor();
+            //don't to let the image get too large or small
+            mScaleFactor = Math.max(mMinZoom, Math.min(mScaleFactor, mMaxZoom));
+            invalidate();
+            return true;
+        }
     }
 }
