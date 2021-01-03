@@ -39,6 +39,7 @@ public class TemplateGalleryActivity extends AppCompatActivity implements ClickL
         pictureList.add("gs://drawing-app-72e25.appspot.com/pony.jpg");
         pictureList.add("gs://drawing-app-72e25.appspot.com/turtle.png");
         pictureList.add("gs://drawing-app-72e25.appspot.com/whale.jpg");
+        updateAdapter(pictureList);
 
     }
 

@@ -8,6 +8,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -19,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,6 +43,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static android.view.MotionEvent.INVALID_POINTER_ID;
@@ -55,6 +60,7 @@ public class CanvasNeha extends View {
     private ArrayList<Drawing> deletedDrawingsArrayList = new ArrayList<Drawing>();
     private Canvas mCanvas;
     private Drawing drawing;
+    private LoadedImage mLoadedImage;
     private Path path;
     boolean clearFlag = true;
     boolean zoomMode = false;
@@ -77,7 +83,8 @@ public class CanvasNeha extends View {
     private Bitmap template;
     private int PAINT_ALPHA;
     private ArrayList<String> savedPictures;
-
+    private Bitmap backgroundBitmap = null;
+    private boolean eraseMode = false;
 
     public CanvasNeha(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -92,6 +99,7 @@ public class CanvasNeha extends View {
         paint.setStrokeCap(Paint.Cap.ROUND);
 
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+
 
     }
 
@@ -114,7 +122,33 @@ public class CanvasNeha extends View {
     protected void onDraw(android.graphics.Canvas canvas) {
         super.onDraw(canvas);
         if(!zoomMode) {
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+
+                if (bitmap != null) {
+                    paint.setStrokeWidth(brushwidth);
+                    paint.setColor(brushColor);
+                    paint.setAlpha(PAINT_ALPHA);
+                    canvas.translate(mPositionX, mPositionY);
+                    canvas.scale(mScaleFactor, mScaleFactor);
+                    //setBackground(new BitmapDrawable(getResources(), backgroundBitmap));
+                    if (backgroundBitmap != null && !backgroundBitmap.isRecycled()) {
+                        backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap, mImageWidth, mImageHeight, false);
+                        canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+                    }
+                    canvas.drawBitmap(bitmap, 0, 0, null);
+                    if (mScaleFactor != 1.f) {
+                        canvas.restore();
+                    }
+                    if(eraseMode) {
+                        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+                    }
+                    else{
+                        paint.setXfermode(null);
+                    }
+                    canvas.drawPath(path, paint);
+                }
+
+
+         /*   if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 //canvas.drawCircle(500,500,300,paint);
                 //canvas.drawColor(Color.RED);
                 canvas.drawBitmap(bitmap, 0, 0, null);
@@ -123,7 +157,7 @@ public class CanvasNeha extends View {
                 paint.setColor(brushColor);
                 paint.setAlpha(PAINT_ALPHA);
                 canvas.drawPath(path, paint);
-            }
+            }*/
         }
         else{
             if (bitmap != null) {
@@ -155,6 +189,19 @@ public class CanvasNeha extends View {
 
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void startCanvas(LoadedImage loadedImage) {
+        drawingArrayList.clear();
+        deletedDrawingsArrayList.clear();
+        backgroundBitmap = null;
+        if (loadedImage.getDrawingArrayList() != null)
+            drawingArrayList = loadedImage.getDrawingArrayList();
+        if (loadedImage.getUndoneDrawingArrayList() != null)
+            deletedDrawingsArrayList = loadedImage.getUndoneDrawingArrayList();
+        loadCanvas(loadedImage);
+
+    }
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -454,6 +501,57 @@ public class CanvasNeha extends View {
         template = Bitmap.createScaledBitmap(bmp,mWidth,mHeight,false);
         saveOfflineCanvas();
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void loadCanvas(LoadedImage loadedImage) {
+        mLoadedImage = loadedImage;
+        if (loadedImage.getBackground() != null) {
+            backgroundBitmap = loadedImage.getBackground();
+        }
+        Paint localPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        //localPaint.setAntiAlias(true);
+        localPaint.setDither(true);
+        localPaint.setStyle(Paint.Style.STROKE);
+        localPaint.setStrokeJoin(Paint.Join.ROUND);
+        localPaint.setStrokeCap(Paint.Cap.ROUND);
+
+        /*if (mBitmap != null) {
+            mBitmap.eraseColor(Color.WHITE);
+        }
+        */
+        // Changed
+        if (bitmap != null && backgroundBitmap!=null) {
+            bitmap.eraseColor(Color.TRANSPARENT);
+        }
+        else{
+            bitmap.eraseColor(Color.WHITE);
+        }
+        if (mCanvas != null) {
+            /*if (backgroundBitmap != null && !backgroundBitmap.isRecycled()) {
+                backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap, mImageWidth, mImageHeight, false);
+                mCanvas.drawBitmap(backgroundBitmap, 0, 0, null);
+            }*/
+            if (loadedImage.getDrawingArrayList() != null) {
+                if (loadedImage.getDrawingArrayList().size() > 0) {
+                    for (Drawing drawing : loadedImage.getDrawingArrayList()) {
+                        if (drawing.isEraseMode()) {
+                            localPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+                            //localPaint.setAlpha(255);
+                        } else {
+                            localPaint.setXfermode(null);
+                            localPaint.setAlpha(255);
+                        }
+                        localPaint.setColor(drawing.getColor());
+                        localPaint.setStrokeWidth(drawing.getWidth());
+                        mCanvas.drawPath(Objects.requireNonNull(drawing.getPath()), localPaint);
+                    }
+                }
+            }
+
+        }
+        invalidate();
+    }
+
 
     public void setZoomMode(boolean b) {
         zoomMode = b;

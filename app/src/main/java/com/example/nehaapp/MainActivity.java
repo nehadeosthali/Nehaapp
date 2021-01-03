@@ -2,6 +2,7 @@ package com.example.nehaapp;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -14,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private GoogleSignInClient mGoogleSignInClient;
+
 
 
 
@@ -264,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == 100 || requestCode == 200 ) {
@@ -276,7 +280,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void convertFiletoBitmap(String filename){
+
         String path = getApplicationContext().getCacheDir().getAbsolutePath() ;
         final File fileimage = new File(path + "/" + filename);
                 FileInputStream is = null;
@@ -284,7 +290,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     is = new FileInputStream(fileimage);
 
                     Bitmap bmp = BitmapFactory.decodeStream(is);
-                    canvasNeha.setBitmap(bmp);
+                    LoadedImage loadedImage = new LoadedImage(bmp,null,null);
+                    //canvasNeha.setBitmap(bmp);
+                    canvasNeha.startCanvas(loadedImage);
                     is.close();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
