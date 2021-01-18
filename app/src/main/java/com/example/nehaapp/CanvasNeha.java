@@ -73,14 +73,12 @@ public class CanvasNeha extends View {
     private float brushwidth;
     private int brushColor;
     private int mActivePointerID = INVALID_POINTER_ID;
-    private int mImageWidth;
-    private int mImageHeight;
     private float mPositionX;
     private float mPositionY;
 
     private int mWidth;
     private int mHeight;
-    private Bitmap template;
+
     private int PAINT_ALPHA;
     private ArrayList<String> savedPictures;
     private Bitmap backgroundBitmap = null;
@@ -131,7 +129,7 @@ public class CanvasNeha extends View {
                     canvas.scale(mScaleFactor, mScaleFactor);
                     //setBackground(new BitmapDrawable(getResources(), backgroundBitmap));
                     if (backgroundBitmap != null && !backgroundBitmap.isRecycled()) {
-                        backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap, mImageWidth, mImageHeight, false);
+                        backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap, mWidth, mHeight, false);
                         canvas.drawBitmap(backgroundBitmap, 0, 0, null);
                     }
                     canvas.drawBitmap(bitmap, 0, 0, null);
@@ -164,15 +162,15 @@ public class CanvasNeha extends View {
                 canvas.save();
                 if ((mPositionX * -1) < 0) {
                     mPositionX = 0;
-                } else if ((mPositionX * -1) > mImageWidth * mScaleFactor - getWidth()) {
-                    mPositionX = (mImageWidth * mScaleFactor - getWidth()) * -1;
+                } else if ((mPositionX * -1) > mWidth * mScaleFactor - getWidth()) {
+                    mPositionX = (mWidth * mScaleFactor - getWidth()) * -1;
                 }
                 if ((mPositionY * -1) < 0) {
                     mPositionY = 0;
-                } else if ((mPositionY * -1) > mImageHeight * mScaleFactor - getHeight()) {
-                    mPositionY = (mImageHeight * mScaleFactor - getHeight()) * -1;
+                } else if ((mPositionY * -1) > mHeight * mScaleFactor - getHeight()) {
+                    mPositionY = (mHeight * mScaleFactor - getHeight()) * -1;
                 }
-                if ((mImageHeight * mScaleFactor) < getHeight()) {
+                if ((mHeight * mScaleFactor) < getHeight()) {
                     mPositionY = 0;
                 }
                 canvas.translate(mPositionX, mPositionY);
@@ -208,6 +206,10 @@ public class CanvasNeha extends View {
         Log.d(TAG, "onSizeChanged()");
         mWidth = w;
         mHeight = h;
+        if (backgroundBitmap != null && !backgroundBitmap.isRecycled()) {
+            backgroundBitmap = Bitmap.createScaledBitmap(backgroundBitmap, w, h, false);
+
+        }
         if (bitmap == null){
             bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             mCanvas = new Canvas(bitmap);
@@ -224,8 +226,8 @@ public class CanvasNeha extends View {
         offlinePaint.setStrokeJoin(Paint.Join.ROUND);
         offlinePaint.setStrokeCap(Paint.Cap.ROUND);
        bitmap.eraseColor(Color.WHITE);
-       if(template!=null) {
-           mCanvas.drawBitmap(template, 0, 0, null);
+       if(backgroundBitmap!=null) {
+           mCanvas.drawBitmap(backgroundBitmap, 0, 0, null);
        }
         for (Drawing drawing : drawingArrayList) {
             offlinePaint.setStrokeWidth(drawing.getWidth());
@@ -497,10 +499,10 @@ public class CanvasNeha extends View {
         return UUID.randomUUID().toString();
     }
 
-    public void setBitmap(Bitmap bmp) {
-        template = Bitmap.createScaledBitmap(bmp,mWidth,mHeight,false);
-        saveOfflineCanvas();
-    }
+//    public void setBitmap(Bitmap bmp) {
+//        template = Bitmap.createScaledBitmap(bmp,mWidth,mHeight,false);
+//        saveOfflineCanvas();
+//    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void loadCanvas(LoadedImage loadedImage) {

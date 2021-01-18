@@ -45,7 +45,7 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyViewHo
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final File f = mpictureList.get(position);
         Picasso.with(context).load(f)
-                .fit().centerCrop()
+                .fit().centerInside()
                 .into(holder.imageView);
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
